@@ -2,7 +2,7 @@
 
 一个 CodeBuddy Skill，用于分析客服/工单类 JSON 数据并生成可视化 HTML 报告。
 
-> **快速体验**：生成的报告为单文件 HTML，直接双击 [`examples/report.html`](./examples/report.html) 即可在浏览器中打开查看。
+> **快速体验**：生成的报告为单文件 HTML，下载 [`examples/report.html`](./examples/report.html) 到本地用浏览器打开即可查看。
 
 ## 目录结构
 
@@ -10,7 +10,7 @@
 ticket-analysis/
 ├── SKILL.md                 # 技能说明与 Agent 工作流
 ├── README.md                # 本文件
-├── .gitignore               # 忽略 __pycache__、*.pyc、output/
+├── .gitignore               # 忽略 __pycache__、*.pyc、output/（运行产物，独立目录时用）
 ├── scripts/
 │   ├── analyze_tickets.py   # 数据分类 / 统计 / 绘图主脚本
 │   └── verify_report.py     # 交付前校验：7 维度结论完整性
@@ -67,21 +67,21 @@ ticket-analysis/
    ```bash
    python scripts/analyze_tickets.py \
      --input examples/task5_tickets.json \
-     --outdir output
+     --outdir examples
    ```
 
-3. 此时生成：
-   - `output/report.html`：含图表 + 待填结论占位符
-   - `output/stats.json`：结构化统计结果
+3. 此时生成（省略 `--outdir` 时默认即为 `examples`）：
+   - `examples/report.html`：含图表 + 待填结论占位符
+   - `examples/stats.json`：结构化统计结果
 
-4. 由 Agent 根据 `stats.json` 填写 `output/report.html` 中各维度的 `<!--ANALYSIS:<dim>-->` 占位符。
+4. 由 Agent 根据 `stats.json` 填写 `examples/report.html` 中各维度的 `<!--ANALYSIS:<dim>-->` 占位符。
 
 5. 校验完整性（必须 PASS 才能交付）：
    ```bash
-   python scripts/verify_report.py output/report.html
+   python scripts/verify_report.py examples/report.html
    ```
 
-6. 查看报告：直接双击 `output/report.html` 在浏览器中打开即可。
+6. 查看报告：下载 `examples/report.html` 到本地用浏览器打开即可。
 
 ## 示例报告
 
