@@ -16,7 +16,7 @@
   - <outdir>/stats.json   结构化统计数据，供 Agent 撰写分析结论
 
 用法：
-  python analyze_tickets.py --input tickets.json --outdir output \
+  python analyze_tickets.py --input tickets.json --outdir examples \
       [--template assets/report_template.html]
 
 依赖：plotly（pip install plotly）。标准库用于数据分类，无需 pandas。
@@ -511,7 +511,7 @@ def main():
     here = Path(__file__).parent
     ap = argparse.ArgumentParser(description="工单数据分析脚本")
     ap.add_argument("--input", required=True, help="工单 JSON 数据文件路径")
-    ap.add_argument("--outdir", default="output", help="输出目录")
+    ap.add_argument("--outdir", default="examples", help="输出目录（默认 examples，覆盖其下 report.html 与 stats.json）")
     ap.add_argument("--template", default=str(here.parent / "assets" / "report_template.html"),
                     help="HTML 模板路径")
     args = ap.parse_args()
