@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工单数据分析报告</title>
+<style>
+  :root {
+    --bg: #f5f7fb; --card: #ffffff; --ink: #1e293b; --muted: #64748b;
+    --line: #e2e8f0; --brand: #2563eb; --accent: #7c3aed;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(120deg, #2563eb, #7c3aed);
+    color: #fff; padding: 32px 24px 64px; text-align: center;
+  }
+  header h1 { margin: 0 0 6px; font-size: 26px; }
+  header .sub { opacity: .9; font-size: 14px; margin: 0; }
+  main { max-width: 1080px; margin: 0 auto; padding: 24px; }
+  .overview {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin: -48px auto 28px; max-width: 1000px; padding: 0 16px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px; text-align: center; box-shadow: 0 6px 20px rgba(30,41,59,.08);
+  }
+  .card .num { font-size: 28px; font-weight: 700; color: var(--brand); }
+  .card .lab { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  section.dim {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    margin-bottom: 16px; box-shadow: 0 4px 14px rgba(30,41,59,.05); overflow: hidden;
+    min-width: 0;
+  }
+  .dim-head {
+    display: flex; align-items: center; gap: 10px; padding: 16px 22px;
+    cursor: pointer; user-select: none; background: #fff;
+  }
+  .dim-head:hover { background: #f8fafc; }
+  .dim-head h2 {
+    margin: 0; font-size: 20px; color: var(--ink);
+    border-left: 5px solid var(--brand); padding-left: 12px; flex: 1;
+  }
+  .arrow { font-size: 14px; color: var(--muted); transition: transform .2s; }
+  .dim.collapsed .arrow { transform: rotate(-90deg); }
+  .dim-body { padding: 0 22px 22px; display: block; min-width: 0; }
+  .dim.collapsed .dim-body { display: none; }
+
+  section.dim h3 { font-size: 15px; color: var(--muted); margin: 18px 0 8px; }
+  .charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 12px; min-width: 0;
+  }
+  .charts > * { min-width: 0; }
+  .charts .plotly-graph-div {
+    width: 100% !important; max-width: 100%; min-width: 0;
+    border: 1px solid var(--line); border-radius: 10px;
+  }
+  table.stat { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.stat td { padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  table.stat td:first-child { color: var(--muted); width: 42%; }
+  .analysis {
+    background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;
+    padding: 14px 16px; margin-top: 10px;
+  }
+  .analysis .analysis-body { color: var(--ink); }
+  .analysis .analysis-body:empty::before {
+    content: "（待 Agent 根据 stats.json 填充分析结论）"; color: #94a3b8; font-style: italic;
+  }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 24px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>工单数据分析报告</h1>
+  <p class="sub">数据周期：{{DATE_RANGE}} ｜ 生成方式：Python + Plotly 交互式图表（点击维度标题可折叠）</p>
+</header>
+
+<div class="overview">
+  {{OVERVIEW}}
+</div>
+
+<main>
+  {{SECTIONS}}
+</main>
+
+<footer>本报告由 ticket-analysis skill 自动生成，分析结论由 Agent 基于统计数据撰写。</footer>
+
+<script>
+  function resizeCharts(root) {
+    root = root || document;
+    root.querySelectorAll('.plotly-graph-div').forEach(function (div) {
+      if (window.Plotly && div.data) {
+        try { Plotly.Plots.resize(div); } catch (e) {}
+      }
+    });
+  }
+
+  function toggleDim(head) {
+    var sec = head.closest('.dim');
+    sec.classList.toggle('collapsed');
+    setTimeout(function () { resizeCharts(sec); }, 10);
+  }
+
+  document.querySelectorAll('.charts').forEach(function (el) {
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () { resizeCharts(el); }).observe(el);
+    }
+  });
+
+  window.addEventListener('load', function () { resizeCharts(document); });
+</script>
+</body>
+</html>
