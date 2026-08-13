@@ -24,7 +24,7 @@ description: 分析客服/工单类 JSON 数据并生成可视化 HTML 报告。
 ### 第 1 步：确定输入与输出
 
 - 输入：工单 JSON 文件路径（数组，每条一个工单）。若用户未指定，询问或查找工作区附近的 `*.json` 工单文件（如 `task5_tickets.json`）。
-- 输出目录：建议 `output/`（脚本 `--outdir`）。
+- 输出目录：固定为 `examples/`（脚本 `--outdir examples`，省略即默认 `examples`），**不要新建其他目录**，每次运行覆盖该目录下的 `report.html` 与 `stats.json` 即可。
 - 确认已安装 `plotly`：若运行脚本报错缺少 `plotly`，先执行 `pip install plotly`（使用可运行 Python 解释器）。
 
 ### 第 2 步：运行分析脚本
@@ -32,17 +32,17 @@ description: 分析客服/工单类 JSON 数据并生成可视化 HTML 报告。
 执行 `scripts/analyze_tickets.py`，示例：
 
 ```bash
-python <skill>/scripts/analyze_tickets.py --input <工单.json> --outdir output
+python <skill>/scripts/analyze_tickets.py --input <工单.json> --outdir examples
 ```
 
 脚本将完成：
 1. 按 7 个维度分类（创建时间含工作日/周末/节假日与上午/下午/晚上判定，节假日优先用 `chinese_calendar`，否则回退内置集合）。
 2. 生成 Plotly 交互图（每日趋势、堆叠分布、占比饼图、评分分布、按分类对比等）。
-3. 输出 `output/report.html`（含图表 + 统计表 + 待填充的分析占位区）与 `output/stats.json`（结构化统计，供下一步使用）。
+3. 输出 `examples/report.html`（含图表 + 统计表 + 待填充的分析占位区）与 `examples/stats.json`（结构化统计，供下一步使用）。省略 `--outdir` 时默认即为 `examples`。
 
 ### 第 3 步：Agent 撰写数据分析结论
 
-读取 `output/stats.json`，针对 **每个维度** 在 `output/report.html` 中对应的 `<!--ANALYSIS:<dim>-->` 占位符处，用 `replace_in_file` 填入中文分析结论。各维度分析要点：
+读取 `examples/stats.json`，针对 **每个维度** 在 `examples/report.html` 中对应的 `<!--ANALYSIS:<dim>-->` 占位符处，用 `replace_in_file` 填入中文分析结论。各维度分析要点：
 
 - **created_at（创建时间）**：必须包含——工作日/周末/节假日对比（引用 `day_type` 计数）、上午/下午/晚上分布（引用 `time_slot`）、峰值日（`peak_date`/`peak_count`）、假期是否出现量增（对比 `holiday_dates` 与平日均值）；可结合优先级看高危时段。
 - **category（问题分类）**：哪类工单最多（`top`/`top_count`），是否存在某类集中爆发。
@@ -59,7 +59,7 @@ python <skill>/scripts/analyze_tickets.py --input <工单.json> --outdir output
 在交付前必须运行校验脚本，确保没有遗漏：
 
 ```bash
-python <skill>/scripts/verify_report.py output/report.html
+python <skill>/scripts/verify_report.py examples/report.html
 ```
 
 该脚本会检查：
@@ -71,7 +71,7 @@ python <skill>/scripts/verify_report.py output/report.html
 
 ### 第 5 步：交付
 
-校验通过后，将最终 `output/report.html` 通过 `open_result_view` / 浏览器预览交付给用户。该文件为单文件、内联 Plotly 库，可直接双击打开。
+校验通过后，将最终 `examples/report.html` 通过 `open_result_view` / 浏览器预览交付给用户。该文件为单文件、内联 Plotly 库，可直接双击打开。
 
 ## Resources
 
